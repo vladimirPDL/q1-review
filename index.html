@@ -2,13 +2,147 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta property="og:title" content="Q1 Results — Internal Review" />
-  <meta property="og:description" content="Key metrics and action items from the quarterly review." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta property="og:title" content="You've Won a Reward!" />
+  <meta property="og:description" content="Open your gift to claim your surprise." />
   <meta property="og:type" content="website" />
-  <meta http-equiv="refresh" content="0; url=https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
-  <title>Q1 Results — Internal Review</title>
+  <title>You've Won a Reward!</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+    .confetti { position: fixed; top: -10px; width: 10px; height: 10px; opacity: 0; pointer-events: none; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; text-align: center; }
+    .subtitle { font-size: 1.1rem; opacity: 0.8; margin-bottom: 2rem; }
+    .gift-wrap { cursor: pointer; position: relative; transition: transform 0.3s; }
+    .gift-wrap:hover { transform: scale(1.05); }
+    .gift-wrap.opened { pointer-events: none; }
+    .gift {
+      width: 160px; height: 140px; background: #e74c3c; border-radius: 8px;
+      position: relative; box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+    .gift::before {
+      content: ''; position: absolute; top: 0; left: 50%; width: 30px;
+      height: 100%; background: #f1c40f; transform: translateX(-50%);
+    }
+    .gift::after {
+      content: ''; position: absolute; top: 50%; left: 0; width: 100%;
+      height: 30px; background: #f1c40f; transform: translateY(-50%);
+    }
+    .lid {
+      width: 180px; height: 40px; background: #c0392b; border-radius: 8px 8px 0 0;
+      position: relative; left: -10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+      transition: transform 0.6s ease;
+    }
+    .lid::before {
+      content: ''; position: absolute; top: 0; left: 50%; width: 30px;
+      height: 100%; background: #e67e22; transform: translateX(-50%);
+    }
+    .gift-wrap.opened .lid {
+      transform: rotate(-45deg) translateY(-60px) translateX(-40px);
+      opacity: 0;
+    }
+    .hint { margin-top: 1.5rem; font-size: 0.95rem; opacity: 0.6; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+    .reward-screen {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center;
+    }
+    .reward-screen h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+    .reward-screen .prize { font-size: 1.3rem; margin-bottom: 2rem; opacity: 0.9; }
+    .reward-screen .claim-btn {
+      padding: 14px 40px; font-size: 1.1rem; background: #f1c40f; color: #1a1a2e;
+      border: none; border-radius: 30px; cursor: pointer; font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(241, 196, 15, 0.4);
+    }
+    .claim-btn:hover { transform: scale(1.05); box-shadow: 0 6px 30px rgba(241, 196, 15, 0.6); }
+
+    .gift-screen { display: flex; flex-direction: column; align-items: center; }
+  </style>
 </head>
 <body>
-  <p>Redirecting…</p>
+  <div class="gift-screen" id="giftScreen">
+    <h1>You've received a gift!</h1>
+    <p class="subtitle">Click the box to open it</p>
+    <div class="gift-wrap" id="giftBox" onclick="openGift()">
+      <div class="lid"></div>
+      <div class="gift"></div>
+    </div>
+    <p class="hint">Tap the gift box</p>
+  </div>
+
+  <div class="reward-screen" id="rewardScreen">
+    <h1 id="rewardTitle"></h1>
+    <p class="prize" id="rewardText"></p>
+    <button class="claim-btn" onclick="claimReward()">Claim Your Reward</button>
+  </div>
+
+  <script>
+    const rewards = [
+      { emoji: '☕', title: 'You won a Free Coffee!', text: 'A premium coffee voucher is waiting for you.' },
+      { emoji: '🎧', title: 'You won Premium Headphones!', text: 'Top-tier noise-cancelling headphones — on us.' },
+      { emoji: '🏖️', title: 'You won an Extra Day Off!', text: 'One bonus vacation day has been added to your balance.' },
+      { emoji: '🍕', title: 'You won a Free Lunch!', text: 'Lunch at any restaurant, fully covered.' },
+      { emoji: '💰', title: 'You won a $100 Bonus!', text: 'A surprise bonus will appear in your next paycheck.' },
+      { emoji: '🎮', title: 'You won a Gaming Console!', text: 'Pick any console — it\'s yours.' },
+    ];
+
+    function openGift() {
+      const box = document.getElementById('giftBox');
+      if (box.classList.contains('opened')) return;
+      box.classList.add('opened');
+
+      const reward = rewards[Math.floor(Math.random() * rewards.length)];
+
+      launchConfetti();
+
+      setTimeout(() => {
+        document.getElementById('giftScreen').style.display = 'none';
+        const screen = document.getElementById('rewardScreen');
+        screen.style.display = 'flex';
+        document.getElementById('rewardTitle').textContent = reward.emoji + ' ' + reward.title;
+        document.getElementById('rewardText').textContent = reward.text;
+      }, 800);
+    }
+
+    function claimReward() {
+      window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    }
+
+    function launchConfetti() {
+      const colors = ['#f1c40f', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#e67e22'];
+      for (let i = 0; i < 80; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.width = (Math.random() * 8 + 6) + 'px';
+        c.style.height = (Math.random() * 8 + 6) + 'px';
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        c.style.animation = `fall ${Math.random() * 2 + 2}s linear ${Math.random() * 0.5}s forwards`;
+        document.body.appendChild(c);
+      }
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fall {
+          0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+          100% { opacity: 0; transform: translateY(100vh) rotate(${Math.random() * 720}deg); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  </script>
 </body>
 </html>
